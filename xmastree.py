@@ -15,6 +15,11 @@ def generate_tree(size, star='☆', needles='#', decoration='*', left_needles=No
 
     # TO DO: add creation decorations by patterns
 
+    size = int(size)
+
+    if size < 3:
+      raise ValueError('Size of the tree must be equal or greater than 3!')
+
     max_tree_width = 1 + 2 * (size - 1)
     base_indent_size = int(max_tree_width // 2) # number of white spaces before the middle of the tree
 
