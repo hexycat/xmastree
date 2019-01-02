@@ -8,12 +8,72 @@ import sys
 from colorama import Fore, Back, Style
 
 
-def generate_tree(size, star='☆', needles='#', decoration='*', left_needles=None, right_needles=None, trim_edges=False, decoration_choice='random'):
+def generate_decorations(tree, decoration_choice='random'):
+    ''' Generate decorations positions for each layer of the tree and store them in a dict '''
+
+    # TO DO: add creation decorations by patterns
+
+    size = len(tree)
+    max_tree_width = 1 + 2 * (size - 1)
+    base_indent_size = int(max_tree_width // 2) # number of white spaces before the middle of the tree
+    decorations = dict.fromkeys(range(size), [])
+
+    for layer_id in range(size):
+        tree_layer_width = layer_id * 2 + 1
+        indent = base_indent_size - layer_id
+
+        if layer_id == 0:
+            decorations[layer_id] = [0 + indent, ]
+            continue
+
+        if layer_id == size - 1:
+            decorations[layer_id] = [i + (base_indent_size - 1) for i in range(3)] # trunk sonsists of three elements
+            break
+
+        # generate decorations positions
+        if decoration_choice == 'random':
+            n_decorations = random.randint(0, int(tree_layer_width / 4))
+            decoration_positions = random.sample(range(tree_layer_width), n_decorations)
+            decoration_positions = sorted(decoration_positions)
+            # keep modiffied by indent size decorations positions to handle them properly later
+            decorations[layer_id] = [indent + pos for pos in decoration_positions]
+        elif decoration_choice == 'pattern':
+            pass
+    return decorations
+
+
+def add_decorations(tree, decorations, decoration='*'):
+    ''' Add decorations to base tree on generated positions '''
+
+    size = len(tree)
+    decorated_tree = dict.fromkeys(range(size), '')
+
+    for layer_id in range(size):
+        modified_layer = ''
+        decoration_positions = decorations[layer_id]
+        n_decorations = len(decorations[layer_id])
+
+        if (n_decorations == 0) or (layer_id == 0) or (layer_id == size - 1):
+            modified_layer = tree[layer_id]
+            decorated_tree[layer_id] = modified_layer
+            continue
+
+        from_id = 0
+        for i in range(n_decorations):
+            decoration_pos = decoration_positions[i]
+            modified_layer += tree[layer_id][from_id:decoration_pos] + decoration
+            from_id = decoration_pos + 1
+            if i == n_decorations - 1:
+                modified_layer += tree[layer_id][from_id:]
+
+        decorated_tree[layer_id] = modified_layer
+    return decorated_tree
+
+
+def generate_tree(size, star='☆', needles='#', left_needles=None, right_needles=None, trim_edges=False):
     # top layer size is 1
     # every next layer is bigger by 2 than previous except of the bottom one
     # overall number of tree layer is equel to size
-
-    # TO DO: add creation decorations by patterns
 
     size = int(size)
 
@@ -23,8 +83,6 @@ def generate_tree(size, star='☆', needles='#', decoration='*', left_needles=No
     max_tree_width = 1 + 2 * (size - 1)
     base_indent_size = int(max_tree_width // 2) # number of white spaces before the middle of the tree
 
-    # store decoration positions for each layer of tree
-    decorations = dict.fromkeys(range(size), [])
     # store entire tree layer by layer
     tree = dict.fromkeys(range(size), '')
 
@@ -41,13 +99,11 @@ def generate_tree(size, star='☆', needles='#', decoration='*', left_needles=No
         # add star on the top of the tree
         if layer_id == 0:
             tree[layer_id] = ' ' * indent + star
-            decorations[layer_id] = [0 + indent, ]
             continue
 
         # add tree trunk at the bottom
         if layer_id == size - 1:
             tree[layer_id] = ' ' * (base_indent_size - 1) + '| |'
-            decorations[layer_id] = [i + (base_indent_size - 1) for i in range(3)] # trunk sonsists of tree elements
             break
 
         # generate tree base layer (fill with needles only)
@@ -59,32 +115,8 @@ def generate_tree(size, star='☆', needles='#', decoration='*', left_needles=No
             right_trim = random.choice([True, False])
             layer_base = ' ' * left_trim + layer_base[1 * left_trim : tree_layer_width - 1 * right_trim] + ' ' * right_trim
 
-        # generate decorations positions
-        if decoration_choice == 'random':
-            n_decorations = random.randint(0, int(tree_layer_width / 4))
-            decoration_positions = random.sample(range(tree_layer_width), n_decorations)
-            decoration_positions = sorted(decoration_positions)
-            # keep modiffied by indent size decorations positions to handle them properly later
-            decorations[layer_id] = [indent + pos for pos in decoration_positions]
-        elif decoration_choice == 'pattern':
-            pass
-
-        # add decorations to base layer
-        from_id = 0
-        for i in range(n_decorations):
-            decoration_pos = decoration_positions[i]
-            layer += layer_base[from_id:decoration_pos] + decoration
-            from_id = decoration_pos + 1
-            if i == n_decorations - 1:
-                layer += layer_base[from_id:]
-
-        if n_decorations == 0:
-            layer = layer_base
-        # save layer
-        tree[layer_id] = ' ' * indent + layer
-        layer = ''
-        layer_base = ''
-    return tree, decorations
+        tree[layer_id] = ' ' * indent + layer_base
+    return tree
 
 
 def colorize(decorations, background_color=None, base_color='green', star_color='red', trunk_color='black', palette=['red', 'yellow', 'blue', 'magenta', 'cyan', 'white'], colors_choice='random'):
@@ -207,5 +239,7 @@ def animate(tree, decorations, fps=24):
 
 if __name__ == '__main__':
     print(Style.BRIGHT)
-    tree, decorations = generate_tree(30, needles='Y', star='^', trim_edges=True)
-    animate(tree, decorations, fps=2)
+    tree = generate_tree(20, needles='Y', star='^', trim_edges=True)
+    decorations_positions = generate_decorations(tree)
+    decorated_tree = add_decorations(tree, decorations_positions)
+    animate(decorated_tree, decorations_positions, fps=2)
