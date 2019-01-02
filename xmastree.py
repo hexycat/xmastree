@@ -6,17 +6,17 @@ import time
 import os
 import sys
 from colorama import Fore, Back, Style
+import math
 
 
 def generate_decorations(tree, decoration_choice='random'):
     ''' Generate decorations positions for each layer of the tree and store them in a dict '''
 
-    # TO DO: add creation decorations by patterns
-
     size = len(tree)
     max_tree_width = 1 + 2 * (size - 1)
     base_indent_size = int(max_tree_width // 2) # number of white spaces before the middle of the tree
     decorations = dict.fromkeys(range(size), [])
+    previous_end_id = 0 # is used only in "pattern" case
 
     for layer_id in range(size):
         tree_layer_width = layer_id * 2 + 1
@@ -35,10 +35,20 @@ def generate_decorations(tree, decoration_choice='random'):
             n_decorations = random.randint(0, int(tree_layer_width / 4))
             decoration_positions = random.sample(range(tree_layer_width), n_decorations)
             decoration_positions = sorted(decoration_positions)
-            # keep modiffied by indent size decorations positions to handle them properly later
-            decorations[layer_id] = [indent + pos for pos in decoration_positions]
         elif decoration_choice == 'pattern':
-            pass
+            # each tree layer splits in three parts
+            # each part consiquently filled with decoration character
+            # one layer contains only one decorated part
+            n_decorations = math.floor((tree_layer_width + 2) / 3)
+            segment_to_fill = (layer_id + 2) % 3
+            start_id = segment_to_fill * n_decorations # default id from which layer is filled with decorations
+            if start_id - 2 == previous_end_id: # if there is a gap between previous segment's end and current start
+                start_id -= 1 # shift current sart to the left to eliminate the gap
+            end_id = min(tree_layer_width, start_id + n_decorations)
+            decoration_positions = range(start_id, end_id)
+            previous_end_id = end_id
+        # save decorations positions modified by indentat size to handle them properly later
+        decorations[layer_id] = [indent + pos for pos in decoration_positions]
     return decorations
 
 
@@ -240,6 +250,6 @@ def animate(tree, decorations, fps=24):
 if __name__ == '__main__':
     print(Style.BRIGHT)
     tree = generate_tree(20, needles='Y', star='^', trim_edges=True)
-    decorations_positions = generate_decorations(tree)
+    decorations_positions = generate_decorations(tree, decoration_choice='pattern')
     decorated_tree = add_decorations(tree, decorations_positions)
     animate(decorated_tree, decorations_positions, fps=2)
