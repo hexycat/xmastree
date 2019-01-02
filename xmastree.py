@@ -130,7 +130,7 @@ def generate_tree(size, star='☆', needles='#', left_needles=None, right_needle
 
 
 def colorize(decorations, background_color=None, base_color='green', star_color='red', trunk_color='black', palette=['red', 'yellow', 'blue', 'magenta', 'cyan', 'white'], colors_choice='random'):
-    # colors_choice: ['random', 'static', 'pattern']
+    # colors_choice: ['random', 'full', 'by_layer']
     # ESC == '\033'
 
     # FOREGROUND:
@@ -154,8 +154,6 @@ def colorize(decorations, background_color=None, base_color='green', star_color=
     # ESC [ 46 m      # cyan
     # ESC [ 47 m      # white
     # ESC [ 49 m      # reset
-
-    # TO DO: add static and pattern color choices
 
     basic_palette = {
         'black': '\033[30m',
@@ -187,6 +185,10 @@ def colorize(decorations, background_color=None, base_color='green', star_color=
 
     # generate color for decorations
     colors_codes = [basic_palette[color] for color in palette] # colors codes choosing from
+
+    if colors_choice == 'full':
+        full_color_code = random.choice(colors_codes)
+
     for layer_id, decors in decorations.items():
         if layer_id == 0:
             decoration_colors[layer_id] = [basic_palette[star_color], ]
@@ -199,10 +201,10 @@ def colorize(decorations, background_color=None, base_color='green', star_color=
         if colors_choice == 'random':
             for i in range(len(decors)):
                 decoration_colors[layer_id].append(random.choice(colors_codes))
-        elif colors_choice == 'static':
-            pass
-        elif colors_choice == 'pattern':
-            pass
+        elif colors_choice == 'full':
+            decoration_colors[layer_id] = [full_color_code, ] * len(decors)
+        elif colors_choice == 'by_layer':
+            decoration_colors[layer_id] = [random.choice(colors_codes), ] * len(decors)
 
     return decoration_colors, base_color_code, background_color_code
 
@@ -239,7 +241,7 @@ def animate(tree, decorations, fps=24):
     try:
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
-            decoration_colors, base_color, background_color = colorize(decorations, background_color='black', base_color='green', trunk_color='magenta')
+            decoration_colors, base_color, background_color = colorize(decorations, background_color='black', base_color='green', trunk_color='magenta', colors_choice='random')
             print_tree(tree, decorations, decoration_colors, base_color, style='color', background_color=background_color)
             time.sleep(sleep_time)
     except KeyboardInterrupt:
