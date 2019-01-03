@@ -4,7 +4,6 @@
 import random
 import time
 import os
-import sys
 from colorama import Fore, Back, Style
 import math
 
@@ -235,23 +234,14 @@ def print_tree(tree, decorations, decoration_colors={}, base_color='', style='co
             print(base_color + tree[layer_id][from_pos:])
 
 
-def animate(tree, decorations, fps=24):
+def animate(tree, decorations, background_color, base_color, trunk_color, colors_choice, style, fps=24):
     sleep_time = 1 / fps
 
     try:
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
-            decoration_colors, base_color, background_color = colorize(decorations, background_color='black', base_color='green', trunk_color='magenta', colors_choice='random')
-            print_tree(tree, decorations, decoration_colors, base_color, style='color', background_color=background_color)
+            decoration_colors, bs_color, bg_color = colorize(decorations, background_color=background_color, base_color=base_color, trunk_color=trunk_color, colors_choice=colors_choice)
+            print_tree(tree, decorations, decoration_colors, bs_color, style=style, background_color=bg_color)
             time.sleep(sleep_time)
     except KeyboardInterrupt:
-        print(Style.RESET_ALL + Back.WHITE)
-        sys.exit(0)
-
-
-if __name__ == '__main__':
-    print(Style.BRIGHT)
-    tree = generate_tree(20, needles='Y', star='^', trim_edges=True)
-    decorations_positions = generate_decorations(tree, decoration_choice='pattern')
-    decorated_tree = add_decorations(tree, decorations_positions)
-    animate(decorated_tree, decorations_positions, fps=2)
+        return

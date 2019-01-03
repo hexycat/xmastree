@@ -1,0 +1,20 @@
+{
+    "size": 20,
+    "star": "^",
+    "needles": "Y",
+    "left_needles": null,
+    "right_needles": null,
+    "trim_edges": true,
+    "decoration": "*",
+    "decoration_choice": "pattern",
+    "background_color": "black",
+    "base_color": "green",
+    "star_color": "red",
+    "trunk_color": "magenta",
+    "palette": ["red", "yellow", "blue", "magenta", "cyan", "white"],
+    "colors_choice": "random",
+    "style": "color",
+    "fps": 2,
+    "animate": true,
+    "brightness": "bright"
+}
