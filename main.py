@@ -17,7 +17,7 @@ if __name__ == '__main__':
     star = tree_settings.get('star', '\u2606')
 
     # tree needles. is used if left_needles or right_needles not specified (any ASCII char)
-    needles = tree_settings.get('needles', '#')
+    needles = tree_settings.get('needles', 'Y')
 
     # needles of the left side of the tree. is preferable than needles if specified (any ASCII char or null)
     left_needles = tree_settings.get('left_needles', None)
