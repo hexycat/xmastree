@@ -234,13 +234,13 @@ def print_tree(tree, decorations, decoration_colors={}, base_color='', style='co
             print(base_color + tree[layer_id][from_pos:])
 
 
-def animate(tree, decorations, background_color, base_color, trunk_color, colors_choice, style, fps=24):
+def animate(tree, decorations, background_color, base_color, star_color, trunk_color, palette, colors_choice, style, fps=24):
     sleep_time = 1 / fps
 
     try:
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
-            decoration_colors, bs_color, bg_color = colorize(decorations, background_color=background_color, base_color=base_color, trunk_color=trunk_color, colors_choice=colors_choice)
+            decoration_colors, bs_color, bg_color = colorize(decorations, background_color=background_color, base_color=base_color, star_color=star_color, trunk_color=trunk_color, palette=palette, colors_choice=colors_choice)
             print_tree(tree, decorations, decoration_colors, bs_color, style=style, background_color=bg_color)
             time.sleep(sleep_time)
     except KeyboardInterrupt:

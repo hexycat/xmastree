@@ -89,10 +89,10 @@ if __name__ == '__main__':
 
     # print tree
     if animation:
-        xmastree.animate(decorated_tree, decorations_positions, background_color=background_color, base_color=base_color, trunk_color=trunk_color, colors_choice=colors_choice, style=style, fps=fps)
+        xmastree.animate(decorated_tree, decorations_positions, background_color=background_color, base_color=base_color, star_color=star_color, trunk_color=trunk_color, palette=palette, colors_choice=colors_choice, style=style, fps=fps)
         os.system('cls' if os.name == 'nt' else 'clear')
     else:
-        decoration_colors, bs_color, bg_color = xmastree.colorize(decorations_positions, background_color=background_color, base_color=base_color, trunk_color=trunk_color, colors_choice=colors_choice)
+        decoration_colors, bs_color, bg_color = xmastree.colorize(decorations_positions, background_color=background_color, base_color=base_color, star_color=star_color, trunk_color=trunk_color, palette=palette, colors_choice=colors_choice)
         xmastree.print_tree(decorated_tree, decorations_positions, decoration_colors, bs_color, style=style, background_color=bg_color)
 
     # reset terminal settings and exit
